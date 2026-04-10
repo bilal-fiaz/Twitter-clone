@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "" // You can set a default link or leave it empty
     }
-}, {timestamps:true})
+}, {timestamps:true}) // Enable timestamps to automatically add createdAt and updatedAt fields
 
 
 const User = mongoose.model("User", userSchema); // Create a Mongoose model named "User" based on the defined schema
