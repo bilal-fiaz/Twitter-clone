@@ -1,6 +1,7 @@
-import e from "express";
+import express from "express";
 import User from "../models/User.model.js";
 import bcrypt from "bcryptjs";
+import { generateTokenAndSetCookie } from "../utils/auth.js";
 export const signup = async (req, res)=>{
     try {
         const {fullName, username, email, password} = req.body;
