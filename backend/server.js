@@ -1,8 +1,14 @@
+// package imports
 import express from "express";
-import authRoutes from "./routes/auth.routes.js"
-import dotenv from "dotenv";
-import connectMongoDB from "./db/connectMongoDB.js";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+
+// Routes imports
+import authRoutes from "./routes/auth.routes.js"
+import userRoutes from "./routes/user.routes.js"
+
+// Utils imports
+import connectMongoDB from "./db/connectMongoDB.js";
 
 dotenv.config()
 const app = express();
@@ -13,6 +19,7 @@ app.use(express.urlencoded({ extended: true })); // to parse URL-encoded data fr
 app.use(cookieParser()); // to parse cookies from incoming requests
 
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 console.log(process.env.MONGO_URI)
 
