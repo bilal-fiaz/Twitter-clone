@@ -49,7 +49,14 @@ const userSchema = new mongoose.Schema({
     link: {
         type: String,
         default: "" // You can set a default link or leave it empty
-    }
+    },
+    likedPosts: [
+        {
+            type: mongoose.Schema.Types.ObjectId, // Assuming likedPosts are stored as references to Post documents
+            ref: "Post",
+            default: [] // Initialize with an empty array
+        }
+    ]
 }, {timestamps:true}) // Enable timestamps to automatically add createdAt and updatedAt fields
 
 
