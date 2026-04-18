@@ -8,6 +8,7 @@ import RightPanel from './components/common/RightPanel'
 import NotificationPage from './pages/notification/NotificationPage.jsx'
 import ProfilePage from './pages/profile/ProfilePage.jsx'
 
+import {Toaster} from 'react-hot-toast'
 function App() {
 
 
@@ -26,6 +27,8 @@ function App() {
 
 
 			<RightPanel />
+
+			<Toaster />
 		</div>
 
 	)
