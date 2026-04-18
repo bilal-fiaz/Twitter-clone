@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
 @plugin "daisyui" {
-  /* optional configuration goes here */
+  themes: light, black;
 }
+
+/* Customizing the 'black' theme for your Twitter clone */
+/* @custom-variant dark (&:where([data-theme="black"], [data-theme="black"] *));
+
+:root [data-theme="black"] {
+  --color-primary: rgb(29, 155, 240);
+  --color-secondary: rgb(24, 24, 24);
+} */
+
+
