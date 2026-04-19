@@ -18,31 +18,31 @@ const SignUpPage = () => {
 		password: "",
 	});
 
-	const {mutate, isError, isPending, error} = useMutation({
-		mutationFn: async({email, username, fullName, password})=>{
+	const { mutate, isError, isPending, error } = useMutation({
+		mutationFn: async ({ email, username, fullName, password }) => {
 			try {
 				const res = await fetch("/api/auth/signup", {
-					method:"POST",
+					method: "POST",
 					headers: {
 						"Content-Type": "application/json"
 					},
-					body: JSON.stringify({email, username, fullName, password})
+					body: JSON.stringify({ email, username, fullName, password })
 				})
 
 				const data = await res.json();
-			if(!res.ok) throw new Error(data.error)
+				if (!res.ok) throw new Error(data.error)
 
-				if(data.error) throw new Error(data.error);
+				if (data.error) throw new Error(data.error);
 
 				console.log(data);
-				 
+
 				return data;
 			} catch (error) {
-				 console.log(error);
-				 throw error;
+				console.log(error);
+				throw error;
 			}
 		},
-		onSuccess: ()=>{
+		onSuccess: () => {
 			toast.success("Account created successfully")
 		}
 	})
@@ -56,7 +56,7 @@ const SignUpPage = () => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
-	
+
 
 	return (
 		<div className='max-w-screen-xl mx-auto flex h-screen px-10'>
@@ -125,7 +125,7 @@ const SignUpPage = () => {
 					</Link>
 				</div>
 			</div>
-            
+
 		</div>
 	);
 };
