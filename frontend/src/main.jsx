@@ -7,7 +7,17 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 const queryClient = new QueryClient({
   defaultOptions:{
     queries:{
-      refetchOnWindowFocus: false
+      // This tells React Query: "If I don't give you a function, use this one"
+      queryFn: async ({ queryKey }) => {
+        if (queryKey[0] === "authUser") {
+          const res = await fetch("/api/auth/me");
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "Failed to fetch");
+          return data;
+        }
+      },
+      retry: false,
+      refetchOnWindowFocus: false,
     }
   }
 })
