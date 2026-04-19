@@ -13,7 +13,7 @@ import { useQuery } from '@tanstack/react-query'
 import LoadingSpinner from './components/common/LoadingSpinner.jsx'
 function App() {
 	const { data: authUser, isLoading, error, isError } = useQuery({
-		queryKey: ['authUser'],
+		queryKey: ["authUser"],
 		queryFn: async () => {
 			try {
 				const res = await fetch("/api/auth/me");
