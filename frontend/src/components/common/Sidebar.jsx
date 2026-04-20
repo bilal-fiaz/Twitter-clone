@@ -29,7 +29,12 @@ const Sidebar = () => {
 		},
 		
 		onSuccess: ()=>{
+			// This immediately clears the user from the cache
+    		queryClient.setQueryData(["authUser"], null);
+			// Optional: still invalidate to make sure everything is in sync
 			queryClient.invalidateQueries({queryKey: ["authUser"]});
+
+			toast.success("Logged out successfully");
 		},
 		onError:()=>{
 			toast.error("Logout failed")
