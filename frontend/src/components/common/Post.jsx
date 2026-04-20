@@ -113,7 +113,7 @@ const Post = ({ post }) => {
 				if (!oldData) return [];
 				return oldData.map((p) => {
 					if (p._id === post._id) {
-						return updatedPost; // Replace the old post with the updated one from server
+						return { ...p, comments: updatedPost.comments };
 					}
 					return p;
 				});
