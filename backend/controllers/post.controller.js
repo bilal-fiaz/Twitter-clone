@@ -76,7 +76,12 @@ export const commentPost = async (req, res) => {
         };
         post.comments.push(comment);
         await post.save();
-        res.status(200).json(post);
+
+        const updatedPost = await Post.findById(postId).populate({
+            path: "comments.user",
+            select: "-password"
+        })
+        res.status(200).json(updatedPost);
 
     } catch (error) {
         console.log ("Error commenting on post:", error.message);
