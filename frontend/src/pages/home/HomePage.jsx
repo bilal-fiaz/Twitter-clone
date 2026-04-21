@@ -38,7 +38,9 @@ const HomePage = () => {
 				<CreatePost />
 
 				{/* POSTS */}
+				<div className="wrap-anywhere">
 				<Posts feedType={feedType} />
+				</div>
 			</div>
 		</>
 	);
