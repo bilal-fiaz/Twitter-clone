@@ -11,10 +11,14 @@ import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatMemberSinceDate } from "../../utils/date";
+import useFollow from "../../hooks/useFollow"
+import toast from "react-hot-toast";
 
 const ProfilePage = () => {
+	const queryClient = useQueryClient()
+
 	const [coverImg, setCoverImg] = useState(null);
 	const [profileImg, setProfileImg] = useState(null);
 	const [feedType, setFeedType] = useState("posts");
@@ -22,17 +26,18 @@ const ProfilePage = () => {
 	const coverImgRef = useRef(null);
 	const profileImgRef = useRef(null);
 
-	const {username} = useParams()
+	const { username } = useParams();
+	const { follow, isPending } = useFollow()
+	const { data: authUser } = useQuery({ queryKey: ["authUser"] })
 
-	const isMyProfile = true;
 
-	const {data:user, isLoading, refetch, isRefetching} = useQuery({
+	const { data: user, isLoading, refetch, isRefetching } = useQuery({
 		queryKey: ["userProfile"],
-		queryFn:  async()=>{
+		queryFn: async () => {
 			try {
 				const res = await fetch(`/api/users/profile/${username}`);
 				const data = await res.json();
-				if(!res.ok){
+				if (!res.ok) {
 					throw new Error(data.error)
 				}
 				return data
@@ -40,7 +45,47 @@ const ProfilePage = () => {
 				throw new Error(error.message);
 			}
 		}
+	});
+
+	const { mutate: updateProfile, isPending: isUpdatingProfile } = useMutation({
+		mutationFn: async () => {
+			try {
+				const res = await fetch(`/api/users/update`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						profileImg,
+						coverImg
+					}),
+				});
+				const data = await res.json();
+				if (!res.ok) {
+					throw new Error(data.error)
+				}
+				return data;
+			} catch (error) {
+				throw new Error(error.message);
+			}
+		},
+		onSuccess: () => {
+			toast.success("Profile updated successfully");
+			Promise.all([
+				queryClient.invalidateQueries({ queryKey: ["authUser"] }),
+				queryClient.invalidateQueries({ queryKey: ["userProfile"] })
+			]);
+			
+		},
+		onError: (error) => {
+			toast.error(error.message)
+		}
 	})
+
+	const isMyProfile = authUser._id === user?._id;
+
+	const memberSiceDate = formatMemberSinceDate(user?.createdAt);
+	const amIFollowing = authUser?.following.includes(user?._id)
 
 	const handleImgChange = (e, state) => {
 		const file = e.target.files[0];
@@ -53,14 +98,14 @@ const ProfilePage = () => {
 			reader.readAsDataURL(file);
 		}
 	};
-	useEffect(()=>{
+	useEffect(() => {
 		refetch()
 	}, [username, refetch])
 	return (
 		<>
 			<div className='flex-[4_4_0]  border-r border-gray-700 min-h-screen '>
 				{/* HEADER */}
-				{isLoading	|| isRefetching &&  <ProfileHeaderSkeleton />}
+				{isLoading || isRefetching && <ProfileHeaderSkeleton />}
 				{!isLoading && !isRefetching && !user && <p className='text-center text-lg mt-4'>User not found</p>}
 				<div className='flex flex-col'>
 					{!isLoading && !isRefetching && user && (
@@ -77,7 +122,7 @@ const ProfilePage = () => {
 							{/* COVER IMG */}
 							<div className='relative group/cover'>
 								<img
-									src={coverImg || user?.coverImg || "/cover.png"}
+									src={coverImg || user?.coverPicture || "/cover.png"}
 									className='h-52 w-full object-cover'
 									alt='cover image'
 								/>
@@ -93,21 +138,21 @@ const ProfilePage = () => {
 								<input
 									type='file'
 									hidden
-                                    accept="image/*"
+									accept="image/*"
 									ref={coverImgRef}
 									onChange={(e) => handleImgChange(e, "coverImg")}
 								/>
 								<input
 									type='file'
 									hidden
-                                    accept="image/*"
+									accept="image/*"
 									ref={profileImgRef}
 									onChange={(e) => handleImgChange(e, "profileImg")}
 								/>
 								{/* USER AVATAR */}
 								<div className='avatar absolute -bottom-16 left-4'>
 									<div className='w-32 rounded-full relative group/avatar'>
-										<img src={profileImg || user?.profileImg || "/avatar-placeholder.png"} />
+										<img src={profileImg || user?.profilePicture || "/avatar-placeholder.png"} />
 										<div className='absolute top-5 right-3 p-1 bg-primary rounded-full group-hover/avatar:opacity-100 opacity-0 cursor-pointer'>
 											{isMyProfile && (
 												<MdEdit
@@ -120,21 +165,24 @@ const ProfilePage = () => {
 								</div>
 							</div>
 							<div className='flex justify-end px-4 mt-5'>
-								{isMyProfile && <EditProfileModal />}
+								{isMyProfile && <EditProfileModal authUser={authUser} />}
 								{!isMyProfile && (
 									<button
 										className='btn btn-outline rounded-full btn-sm'
-										onClick={() => alert("Followed successfully")}
+										onClick={() => follow(user?._id)}
 									>
-										Follow
+										{isPending && "Loading..."}
+										{!isPending && amIFollowing && "Unfollow"}
+										{!isPending && !amIFollowing && "Follow"}
+
 									</button>
 								)}
 								{(coverImg || profileImg) && (
 									<button
-										className='btn btn-primary rounded-full btn-sm text-white px-4 ml-2'
-										onClick={() => alert("Profile updated successfully")}
+										className='btn primary rounded-full btn-sm text-white px-4 ml-2'
+										onClick={() => updateProfile()}
 									>
-										Update
+										{isUpdatingProfile ? "Updating.." : "Update"}
 									</button>
 								)}
 							</div>
@@ -152,12 +200,12 @@ const ProfilePage = () => {
 											<>
 												<FaLink className='w-3 h-3 text-slate-500' />
 												<a
-													href='https://youtube.com/@asaprogrammer_'
+													href={user?.link}
 													target='_blank'
 													rel='noreferrer'
 													className='text-sm text-blue-500 hover:underline'
 												>
-													youtube.com/@asaprogrammer_
+													{user?.link}
 												</a>
 											</>
 										</div>
@@ -165,7 +213,7 @@ const ProfilePage = () => {
 									<div className='flex gap-2 items-center'>
 										<IoCalendarOutline className='w-4 h-4 text-slate-500' />
 										<span className='text-sm text-slate-500'>
-											{formatMemberSinceDate(user?.createdAt)}
+											{memberSiceDate}
 										</span>
 									</div>
 								</div>

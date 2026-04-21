@@ -11,37 +11,37 @@ import toast from "react-hot-toast";
 
 const Sidebar = () => {
 	const queryClient = useQueryClient()
-	
 
-	const {mutate:logout, isPending, isError, error} = useMutation({
-		mutationFn: async()=>{
+
+	const { mutate: logout, isPending} = useMutation({
+		mutationFn: async () => {
 			try {
-				const res = await fetch("/api/auth/logout",{
-					method:"POST",
+				const res = await fetch("/api/auth/logout", {
+					method: "POST",
 				});
 				const data = await res.json();
-				if(!res.ok){
+				if (!res.ok) {
 					throw new Error(data.error)
 				}
 			} catch (error) {
 				throw new Error(error)
 			}
 		},
-		
-		onSuccess: ()=>{
+
+		onSuccess: () => {
 			// This immediately clears the user from the cache
-    		queryClient.setQueryData(["authUser"], null);
+			queryClient.setQueryData(["authUser"], null);
 			// Optional: still invalidate to make sure everything is in sync
-			queryClient.invalidateQueries({queryKey: ["authUser"]});
+			queryClient.invalidateQueries({ queryKey: ["authUser"] });
 
 			toast.success("Logged out successfully");
 		},
-		onError:()=>{
+		onError: () => {
 			toast.error("Logout failed")
 		}
 	})
-	const {data: authUser} = useQuery({queryKey: ["authUser"]}) 
-
+	const { data: authUser } = useQuery({ queryKey: ["authUser"] })
+// console.log("SIDEBAR CHECK:", authUser?.profilePicture);
 	return (
 		<div className='md:flex-[2_2_0] w-18 max-w-52'>
 			<div className='sticky top-0 left-0 h-screen flex flex-col border-r border-gray-700 w-20 md:w-full'>
@@ -85,7 +85,19 @@ const Sidebar = () => {
 					>
 						<div className='avatar hidden md:inline-flex'>
 							<div className='w-8 rounded-full'>
-								<img src={authUser?.profileImg || "/avatar-placeholder.png"} />
+								{authUser?.profilePicture ? (
+									<img
+										src={authUser.profilePicture}
+										alt='profile'
+										className='w-full h-full object-cover'
+									/>
+								) : (
+									<img
+										src="/avatar-placeholder.png"
+										alt='placeholder'
+										className='w-full h-full object-cover'
+									/>
+								)}
 							</div>
 						</div>
 						<div className='flex justify-between flex-1'>
@@ -94,7 +106,7 @@ const Sidebar = () => {
 								<p className='text-slate-500 text-sm'>@{authUser?.username}</p>
 							</div>
 							<BiLogOut className={`w-5 h-5 ${isPending ? "animate-pulse cursor-not-allowed" : "cursor-pointer"}`}
-								onClick={(e)=>{
+								onClick={(e) => {
 									e.preventDefault();
 									logout()
 								}}
