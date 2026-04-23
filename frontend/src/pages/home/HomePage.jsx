@@ -34,11 +34,11 @@ const HomePage = () => {
 					</div>
 				</div>
 
+
+				<div className="wrap-anywhere">
 				{/*  CREATE POST INPUT */}
 				<CreatePost />
-
 				{/* POSTS */}
-				<div className="wrap-anywhere">
 				<Posts feedType={feedType} />
 				</div>
 			</div>
