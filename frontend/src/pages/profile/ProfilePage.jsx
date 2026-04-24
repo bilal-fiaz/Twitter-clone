@@ -40,11 +40,13 @@ const ProfilePage = () => {
 					throw new Error(data.error)
 				}
 				return data
+
 			} catch (error) {
 				throw new Error(error.message);
 			}
 		}
 	});
+
 
 	const { updateProfile, isUpdatingProfile } = useUpdateUserProfile()
 
@@ -69,6 +71,8 @@ const ProfilePage = () => {
 	}, [username, refetch])
 	return (
 		<>
+		<title>{user ? `${user?.fullName} (@${user?.username}) / X` : "Loading..."}</title>
+		
 			<div className='flex-[4_4_0]  border-r border-gray-700 min-h-screen '>
 				{/* HEADER */}
 				{isLoading || isRefetching && <ProfileHeaderSkeleton />}

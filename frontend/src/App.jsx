@@ -11,8 +11,11 @@ import ProfilePage from './pages/profile/ProfilePage.jsx'
 import { Toaster } from 'react-hot-toast'
 import { useQuery } from '@tanstack/react-query'
 import LoadingSpinner from './components/common/LoadingSpinner.jsx'
+
+import XSvg from "../src/components/svgs/X.jsx";
+
 function App() {
-	const { data: authUser, isLoading, error, isError } = useQuery({
+	const { data: authUser, isLoading } = useQuery({
 		queryKey: ["authUser"],
 		queryFn: async () => {
 			try {
@@ -43,6 +46,10 @@ function App() {
 
 console.log(authUser)
 	return (
+		<>
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
+		
 		<div className='flex max-w-6xl mx-auto'>
 			{/* common component, bc it's not wrapped with routes */}
 			{authUser && <Sidebar />}
@@ -60,7 +67,7 @@ console.log(authUser)
 
 			<Toaster />
 		</div>
-
+</>
 	)
 }
 
