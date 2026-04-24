@@ -64,7 +64,7 @@ const Post = ({ post }) => {
 			}
 		},
 		onSuccess: (updatedLikes) => {
-			toast.success("Post liked successfully");
+			// toast.success("Post liked successfully");
 			// this is not the UX, bs it will fetch all post
 			// queryClient.invalidateQueries({queryKey: ["posts"]});
 

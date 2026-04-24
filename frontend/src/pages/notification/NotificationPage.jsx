@@ -7,6 +7,9 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa6";
 import toast from "react-hot-toast";
+import { FaComment } from "react-icons/fa";
+import { RiUserFollowFill } from "react-icons/ri";
+
 
 const NotificationPage = () => {
 	const queryClient = useQueryClient()
@@ -78,20 +81,23 @@ const NotificationPage = () => {
 					</div>
 				)}
 				{notifications?.length === 0 && <div className='text-center p-4 font-bold'>No notifications 🤔</div>}
-				{notifications?.map((notification) => (
+				{notifications?.toReversed().map((notification) => (
 					<div className='border-b border-gray-700' key={notification._id}>
 						<div className='flex gap-2 p-4'>
-							{notification.type === "follow" && <FaUser className='w-7 h-7 text-primary' />}
-							{notification.type === "like" && <FaHeart className='w-7 h-7 text-red-500' />}
+							{notification.type === "follow" && <RiUserFollowFill  className='w-5 h-5 text-yellow-500'  />}
+							{notification.type === "like" && <FaHeart className='w-5 h-5 text-red-500' />}
+							{notification.type === "comment" && <FaComment className='w-5 h-5 text-green-500' />}
 							<Link to={`/profile/${notification.from.username}`}>
 								<div className='avatar'>
 									<div className='w-8 rounded-full'>
-										<img src={notification.from.profileImg || "/avatar-placeholder.png"} />
+										<img src={notification.from.profilePicture || "/avatar-placeholder.png"} />
 									</div>
 								</div>
 								<div className='flex gap-1'>
 									<span className='font-bold'>@{notification.from.username}</span>{" "}
-									{notification.type === "follow" ? "followed you" : "liked your post"}
+									{notification.type === "follow" && "followed you"}
+									{notification.type === "like" && "Liked your post"}
+									{notification.type === "comment" && "Commented on your post"}
 								</div>
 							</Link>
 						</div>

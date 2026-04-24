@@ -76,6 +76,13 @@ export const commentPost = async (req, res) => {
         };
         post.comments.push(comment);
         await post.save();
+        const notification = new Notification({
+                    from: userId,
+                    to: post.user,
+                    type: "comment",
+                    post: postId
+                });
+                await notification.save();
 
         const updatedPost = await Post.findById(postId).populate({
             path: "comments.user",
